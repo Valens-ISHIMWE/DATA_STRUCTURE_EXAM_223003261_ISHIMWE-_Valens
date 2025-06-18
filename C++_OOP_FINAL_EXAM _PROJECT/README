@@ -20,17 +20,17 @@ Inheritance: Two concrete classes, GreedyDispenser and OptimalDispenser, were de
 Polymorphism: Each derived class, GreedyDispenser and OptimalDispenser, provides its specific implementation of the withdraw logic, overriding the pure virtual function from the Dispenser base class.
 GreedyDispenser implements a simple greedy algorithm: it iterates through denominations (assumed sorted from largest to smallest) and dispenses as many notes as possible of the current denomination until the amount is met or no more notes are available.
 OptimalDispenser implements a strategy that first calculates the exact notes needed for the withdrawal without immediately modifying the counts. It then commits these changes and dispenses the notes only if the exact amount can be formed.
-	This dual implementation of the withdraw method, accessed through a common base class interface, is the core demonstration of polymorphism.
+This dual implementation of the withdraw method, accessed through a common base class interface, is the core demonstration of polymorphism.
 3. Store Dispenser  in Dispenser  machines
 This task further exemplifies the practical application of polymorphism and dynamic dispatch.
-	Dynamic Array of Dispenser Pointers: A static array of pointers to Dispenser objects, specifically Dispenser* machines[2], is used. This array serves as a container capable of holding pointers to either GreedyDispenser or OptimalDispenser instances (or nullptr when empty).
-	Polymorphic Dispatch: When a user selects a withdrawal strategy, a new object of the chosen derived class (GreedyDispenser or OptimalDispenser) is dynamically created (new GreedyDispenser(...) or new OptimalDispenser(...)) and its address is stored in machines[0] or machines[1]. 
-	The crucial point is that when the code calls machines[i]->withdraw(amount), C++'s virtual function mechanism (or runtime polymorphism) is engaged. This mechanism ensures that the correct withdraw method—whether it's the one defined in GreedyDispenser or OptimalDispenser—is dynamically selected and executed at runtime, based on the actual type of object that machines[i] is currently pointing to. This allows the program to interact with different dispensing strategies through a unified base class pointer.
+Dynamic Array of Dispenser Pointers: A static array of pointers to Dispenser objects, specifically Dispenser* machines[2], is used. This array serves as a container capable of holding pointers to either GreedyDispenser or OptimalDispenser instances (or nullptr when empty).
+Polymorphic Dispatch: When a user selects a withdrawal strategy, a new object of the chosen derived class (GreedyDispenser or OptimalDispenser) is dynamically created (new GreedyDispenser(...) or new OptimalDispenser(...)) and its address is stored in machines[0] or machines[1]. 
+The crucial point is that when the code calls machines[i]->withdraw(amount), C++'s virtual function mechanism (or runtime polymorphism) is engaged. This mechanism ensures that the correct withdraw method—whether it's the one defined in GreedyDispenser or OptimalDispenser—is dynamically selected and executed at runtime, based on the actual type of object that machines[i] is currently pointing to. This allows the program to interact with different dispensing strategies through a unified base class pointer.
 4. Pointer Arithmetic on denoms
 This task emphasizes direct memory manipulation through pointers.
-	While explicit pointer arithmetic using (denoms + i) for array traversal was not the primary method (standard array indexing denoms[i] was used for clarity), the task's spirit was fulfilled through direct pointer usage for managing counts and the underlying dynamic array.
-	Dereferencing int  count: The (denoms[i].count) operation is used extensively within both GreedyDispenser::withdraw and OptimalDispenser::withdraw to dereference the int count pointer. This allows direct access to the integer value representing the number of available notes for denoms[i]. For example, ( (denoms[i].count))--; directly decrements the numerical count stored at the memory location pointed to by denoms[i].count.
-	The dynamic allocation and deallocation logic within addDenomination and removeDenomination (e.g., new Denomination[...], delete[] denoms, new int(count), delete denoms[index].count) are foundational pointer operations that involve managing memory addresses directly.
+While explicit pointer arithmetic using (denoms + i) for array traversal was not the primary method (standard array indexing denoms[i] was used for clarity), the task's spirit was fulfilled through direct pointer usage for managing counts and the underlying dynamic array.
+Dereferencing int  count: The (denoms[i].count) operation is used extensively within both GreedyDispenser::withdraw and OptimalDispenser::withdraw to dereference the int count pointer. This allows direct access to the integer value representing the number of available notes for denoms[i]. For example, ( (denoms[i].count))--; directly decrements the numerical count stored at the memory location pointed to by denoms[i].count.
+The dynamic allocation and deallocation logic within addDenomination and removeDenomination (e.g., new Denomination[...], delete[] denoms, new int(count), delete denoms[index].count) are foundational pointer operations that involve managing memory addresses directly.
 5. Implement addDenomination and removeDenomination by Resizing Denomination
 This task specifically required implementing functions that dynamically manage the size of the main denoms array.
 addDenomination(int value, int count): This function is responsible for incorporating new types of currency notes or increasing the stock of existing ones.
@@ -78,22 +78,22 @@ While explicit pointer arithmetic like (denoms + i) for array indexing was not t
 	Direct Dereferencing for Counts: Crucially, the requirement was fulfilled by specifically using pointer dereferencing on the int count member of the Denomination struct. 
 	In both GreedyDispenser and OptimalDispenser classes, expressions like (denoms[i].count) are used to access the actual integer value (the count of notes) that the int count pointer is pointing to.
 Operations such as ((denoms[i].count))-- explicitly demonstrate decrementing the actual note count stored at the memory location pointed to by denoms[i].count. This showcases direct manipulation of data through pointers.
-•	Furthermore, the dynamic memory allocation and deallocation operations for denoms (e.g., new Denomination[...], delete[] denoms;) and for individual count pointers (new int(count), delete denoms[index].count;) are fundamental exercises in pointer management.
+Furthermore, the dynamic memory allocation and deallocation operations for denoms (e.g., new Denomination[...], delete[] denoms;) and for individual count pointers (new int(count), delete denoms[index].count;) are fundamental exercises in pointer management.
 5. Implement addDenomination and removeDenomination:
 These functions were implemented to manage the dynamic Denomination denoms array through resizing.
-•	addDenomination(int value, int count) Implementation:
-	This function first iterates through the existing denoms array to check if a denomination with the given value already exists. If it does, it simply increments the existing (denoms[i].count).
-	If the denomination is new, the function dynamically creates a new Denomination array (newArr) with a size of size + 1.
-	It then copies all existing Denomination elements from the old denoms array to this newArr.
-	The new value and its dynamically allocated count (new int(count)) are placed in the last position of newArr.
-	The old denoms array is then explicitly delete[]'d to release its memory, and the denoms pointer is updated to point to the newArr. The size variable is incremented.
-	Finally, sortDenoms is called to maintain the descending order of denominations by value.
-•	removeDenomination(int value) Implementation:
-o	This function searches for the Denomination entry corresponding to the given value.
-o	Once found at index, it performs a critical step: delete denoms[index].count;. This deallocates the specific integer count that was dynamically allocated for that denomination, preventing a memory leak for that individual count.
-o	A new Denomination array (newArr) with a size of size - 1 is then dynamically created.
-o	Elements from the old denoms array are copied to newArr, meticulously skipping the element at the index that is being removed.
-o	The old denoms array is then delete[]'d, and the denoms pointer is updated to point to newArr. The size variable is decremented.
+addDenomination(int value, int count) Implementation:
+This function first iterates through the existing denoms array to check if a denomination with the given value already exists. If it does, it simply increments the existing (denoms[i].count).
+If the denomination is new, the function dynamically creates a new Denomination array (newArr) with a size of size + 1.
+It then copies all existing Denomination elements from the old denoms array to this newArr.
+The new value and its dynamically allocated count (new int(count)) are placed in the last position of newArr.
+The old denoms array is then explicitly delete[]'d to release its memory, and the denoms pointer is updated to point to the newArr. The size variable is incremented.
+Finally, sortDenoms is called to maintain the descending order of denominations by value.
+removeDenomination(int value) Implementation:
+This function searches for the Denomination entry corresponding to the given value.
+Once found at index, it performs a critical step: delete denoms[index].count;. This deallocates the specific integer count that was dynamically allocated for that denomination, preventing a memory leak for that individual count.
+A new Denomination array (newArr) with a size of size - 1 is then dynamically created.
+Elements from the old denoms array are copied to newArr, meticulously skipping the element at the index that is being removed.
+The old denoms array is then delete[]'d, and the denoms pointer is updated to point to newArr. The size variable is decremented.
 
 
 Code Annotation with Comments
