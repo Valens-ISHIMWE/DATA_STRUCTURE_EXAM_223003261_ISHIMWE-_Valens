@@ -75,8 +75,8 @@ The call machines[i]->withdraw(amount) then leverages C++'s virtual function mec
 4. Pointer Arithmetic on denoms:
 This task highlights the use of pointers for accessing and manipulating data within the dynamic denomination structure.
 While explicit pointer arithmetic like (denoms + i) for array indexing was not the primary method, the underlying mechanism of C++ array indexing (denoms[i]) inherently relies on pointer arithmetic (base address + offset).
-	Direct Dereferencing for Counts: Crucially, the requirement was fulfilled by specifically using pointer dereferencing on the int count member of the Denomination struct. 
-	In both GreedyDispenser and OptimalDispenser classes, expressions like (denoms[i].count) are used to access the actual integer value (the count of notes) that the int count pointer is pointing to.
+Direct Dereferencing for Counts: Crucially, the requirement was fulfilled by specifically using pointer dereferencing on the int count member of the Denomination struct. 
+In both GreedyDispenser and OptimalDispenser classes, expressions like (denoms[i].count) are used to access the actual integer value (the count of notes) that the int count pointer is pointing to.
 Operations such as ((denoms[i].count))-- explicitly demonstrate decrementing the actual note count stored at the memory location pointed to by denoms[i].count. This showcases direct manipulation of data through pointers.
 Furthermore, the dynamic memory allocation and deallocation operations for denoms (e.g., new Denomination[...], delete[] denoms;) and for individual count pointers (new int(count), delete denoms[index].count;) are fundamental exercises in pointer management.
 5. Implement addDenomination and removeDenomination:
